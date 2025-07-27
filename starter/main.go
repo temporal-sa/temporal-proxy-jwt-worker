@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
+	vaultauth "github.com/temporal-sa/temporal-proxy-jwt-worker"
 	"go.temporal.io/sdk/client"
 	"log"
-	"temporal-sa/vaultauth"
 
 	"github.com/temporalio/samples-go/helloworld"
 )
@@ -12,16 +12,16 @@ import (
 func main() {
 	// The client is a heavyweight object that should be created once per process.
 	c, err := client.Dial(client.Options{
-		HostPort:  "127.0.0.1:9000",
-		Namespace: "brendan-myers-aws.a2dd6",
+		HostPort:  "127.0.0.1:9000",        // address of Temporal Cloud proxy
+		Namespace: "<namespace>.<account>", // Temporal Cloud namespace must be provided
 		HeadersProvider: &vaultauth.VaultHeadersProvider{
 			Config: vaultauth.VaultConfig{
 				VaultAddr: "http://127.0.0.1:8200",
-				Username:  "brendan",
-				Password:  "secret",
+				Username:  "username",
+				Password:  "password",
 				OidcRole:  "temporal-worker",
 			},
-			WorkloadId: "brendan-keys",
+			WorkloadId: "my-workload", // maps to proxy config
 		},
 	})
 	if err != nil {
@@ -30,7 +30,6 @@ func main() {
 	defer c.Close()
 
 	workflowOptions := client.StartWorkflowOptions{
-		ID:        "hello_world_workflowID",
 		TaskQueue: "vault-auth",
 	}
 

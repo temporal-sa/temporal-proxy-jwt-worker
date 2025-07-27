@@ -1,4 +1,4 @@
-module temporal-sa/vaultauth
+module github.com/temporal-sa/temporal-proxy-jwt-worker
 
 go 1.24.4
 
